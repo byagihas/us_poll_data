@@ -1,0 +1,29 @@
+{
+  "name": "poll_dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "3.2.0",
+    "body-parser": "1.19.0",
+    "compression": "1.7.4",
+    "csvtojson": "2.0.10",
+    "dotenv": "8.2.0",
+    "escape-html": "1.0.3",
+    "express": "4.17.1",
+    "express-rate-limit": "5.1.3",
+    "extract-zip": "2.0.0",
+    "fs": "0.0.1-security",
+    "helmet": "3.22.0",
+    "lodash": "4.17.15",
+    "path": "0.12.7",
+    "request": "2.88.2",
+    "request-promise": "4.2.5",
+    "url": "0.11.0"
+  }
+}
