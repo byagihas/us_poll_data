@@ -1,28 +1,25 @@
 // Simple API to serve JSON objects from Fivethirtyeight public CSV files.
+// Need to implement: Parameter matching, Sort, Search functionality.
 // node index.js
 'use strict';
 
 require('dotenv').config();
+
 // MAIN REQUIRE's
+const getData = require('./data.js');
+
 const fs = require('fs');
 const csv = require('csvtojson');
 const path = require('path');
 const async = require('async');
-const request = require('request');
-const url = require('url');
-
-const lodash = require('lodash');
 const express = require('express');
 const app = express();
-
-const escapeHTML = require('escape-html');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
-app.enable('trust proxy'); // Use for reverse proxy with nginx
-app.set('view engine', 'ejs');
+app.enable('trust proxy');
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -57,10 +54,16 @@ const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today_date)
 
 // START ROUTES
 // GET - / 
-// Load index page
-app.get(`/:resource`, (req, res, next) => {
-    let resource = req.params.resource + `_${year}${month}${day}`;
-    res.sendFile(__dirname + `/polls/${resource}.json`);
+// polls/:resource
+// resource can be one of: generic_ballot_polls, governor_polls, senate_polls, house_polls,
+// pres_primary_avgs_2020, president_approval_polls, president_polls, president_primary_polls
+app.get(`/polls/:resource`, (req, res, next) => {
+    let resource = req.params.resource;
+    let resource_path = __dirname + '/polls/json/' + resource + `_${year}${month}${day}.json`
+    getData(resource);
+    res.setHeader('content-type','application/json');
+    res.sendFile(resource_path);
+
 });
 
 app.listen(8657, 'localhost',  () => console.log('POLL DATA APP RUNNING PORT 8657'));

@@ -17,47 +17,35 @@ const month = new Intl.DateTimeFormat('en', { month: 'numeric' }).format(today_d
 const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today_date);
 
 // Get CSV file from FiveThirtyEight
-const getCSV = async (poll_name) => {
-    let poll_path =  __dirname + `/polls/${poll_name}_${year}${month}${day}.csv`;
-    if(fs.existsSync(poll_path)) {
-        return poll_path;
-    } else {
-        request(poll_path, (error, res, file) => {
-            if (error) { throw new Error; }
-            else {
-                fs.writeFileSync(poll_path, file);
-                console.log('CSV file saved: ' + poll_path);
-                return poll_path;
-            }
-        });
-        return poll_path;
-    }
+const getCSV= async (poll_name) => {
+    let csv_path =  __dirname + `/polls/csv/${poll_name}_${year}${month}${day}.csv`;
+    request(`https://projects.fivethirtyeight.com/polls-page/${poll_name}.csv`, (error, res, file) => {
+        fs.writeFileSync(csv_path, file, { flag: "w" });
+        console.log('CSV file saved: ' + csv_path);
+    });
+    return csv_path;
 };
 
-// Convert CSV file to JSON
 const convertToJSON = async (poll_name) => {
-    const csvFilePath = await getCSV(poll_name);
-    const csvconvert = csv().fromFile(csvFilePath);
-    return csvconvert;
-}
-
-// Finally, Save Data as JSON
-const saveDataAsJSON = async (poll_name) => {
-    const data = await convertToJSON(poll_name);
-    fs.writeFile(__dirname + `/polls/${poll_name}_${year}${month}${day}.json`, JSON.stringify(data), (err) => {
+    let csv_path = await getCSV(poll_name);
+    let json_path = __dirname + `/polls/json/${poll_name}_${year}${month}${day}.json`;
+    // Convert from csv to JSON
+    const jsonArray=await csv().fromFile(csv_path);
+    // Write JSON Object
+    fs.writeFileSync(json_path, JSON.stringify(jsonArray), { flag: "w" }, (err) => {
         if (err) { throw new Error };
-        console.log('JSON file saved: ' + __dirname + `/polls/${poll_name}_${year}${month}${day}.json`)
+        console.log('JSON file saved: ' + json_path);
+        return json_path;
     });
 };
 
-saveDataAsJSON('president_primary_polls');
-saveDataAsJSON('president_polls');
-saveDataAsJSON('president_approval_polls');
-saveDataAsJSON('pres_primary_avgs_2020');
+convertToJSON('governor_polls');
+convertToJSON('generic_ballot_polls');
+convertToJSON('house_polls');
+convertToJSON('senate_polls');
+convertToJSON('pres_primary_avgs');
+convertToJSON('president_approval_polls');
+convertToJSON('president_polls');
+convertToJSON('president_primary_polls');
 
-saveDataAsJSON('senate_polls');
-saveDataAsJSON('house_polls');
-saveDataAsJSON('governor_polls');
-saveDataAsJSON('generic_ballot_polls');
-
-module.exports = saveDataAsJSON;
+module.exports = convertToJSON;
