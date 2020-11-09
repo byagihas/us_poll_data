@@ -20,7 +20,7 @@
     "extract-zip": "2.0.0",
     "fs": "0.0.1-security",
     "helmet": "3.22.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "path": "0.12.7",
     "request": "2.88.2",
     "request-promise": "4.2.5",
